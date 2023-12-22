@@ -34,9 +34,15 @@ class LPRDataLoader(Dataset):
     def __len__(self):
         return len(self.img_paths)
 
+    def cv_imread(self, filePath):
+        cv_img = cv2.imdecode(np.fromfile(filePath, dtype=np.uint8), -1)
+        # imdecode读取的是rgb，如果后续需要opencv处理的话，需要转换成bgr，转换后图片颜色会变化
+        # cv_img=cv2.cvtColor(cv_img,cv2.COLOR_RGB2BGR)
+        return cv_img
+
     def __getitem__(self, index):
         filename = self.img_paths[index]
-        Image = cv2.imread(filename)
+        Image = self.cv_imread(filename)
         height, width, _ = Image.shape
         if height != self.img_size[1] or width != self.img_size[0]:
             Image = cv2.resize(Image, self.img_size)
